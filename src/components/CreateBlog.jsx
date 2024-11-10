@@ -20,6 +20,17 @@ const CreateBlog = () => {
     const [blogInfo, setBlogInfo] = useState({
         userId: currentUser.uid
     });
+
+    // make a useState but for favorite\
+    //use LocalStorage
+    //everytime user like a post it will call function handleFavorite()
+    //handle favorite will delete the favvorite if the user unfavorite it 
+    // handleFavorite will add the favorite post into the database with the user Id so it can be used to fetch for favorite web
+    // Must have favoriteBlogCollection in order to use database ex: const favoriteBlogCollection = collection(db, "favorite");
+    //after that will add logics to now allow user to like their own post
+
+    //in ViewFavoritePage, it will only fetch user favorite post by checking user.id and favorite blog id  ?
+
     const blogCollectionReference = collection(db, "blogs");
     const [alertConfig, setAlertConfig] = useState({});
     const [selectedCategory, setSelectedCategory] = useState(null); //Use to change color
