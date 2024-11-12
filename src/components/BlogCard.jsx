@@ -8,15 +8,17 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 
 const BlogCard = (props) => {
-    const { blog, deleteBlog = () => {}, showDeleteIcon = true } = props;
-    const [ isFavorite, setIsFavorite]= useState(false);
+    const { blog, deleteBlog, addFavoriteblg, removeFavoriteblg, isFavoriteblg = () => {} , showDeleteIcon = true } = props;
     // Favorites Table as well in the database
 
     const navigate = useNavigate();
 
     const handleFavoriteClick = () => {
-        setIsFavorite(!isFavorite); // Toggle favorite state
-        console.log("coming from favorite click")
+        if (isFavoriteblg) {
+            removeFavoriteblg(blog.id);
+        } else {
+            addFavoriteblg(blog.id);
+        }
     };
 
     return (
@@ -42,7 +44,7 @@ const BlogCard = (props) => {
 
             </CardContent>
             <CardActions>
-                <IconButton color="error" onClick={handleFavoriteClick}> {isFavorite ? <FavoriteIcon /> : <FavoriteBorderIcon />} </IconButton>
+                <IconButton color="error" onClick={handleFavoriteClick}> {isFavoriteblg ? <FavoriteIcon /> : <FavoriteBorderIcon />} </IconButton>
                 <Button color='secondary' variant='contained' onClick={() => navigate(`/viewblogs/${blog.id}`)}>Learn More</Button>
             </CardActions>
         </Card>
