@@ -9,9 +9,10 @@ import { useNavigate } from 'react-router-dom';
 import useLocalStorage from '../hooks/useLocalStorage';
 
 const ViewBlogsPage = () => {
+    const [currentUser, setCurrentUser] = useLocalStorage('current_user', null);
+
     const blogCollectionReference = collection(db, "blogs");
     const favoriteBlogCollectionReference = collection(db, "favorite");
-    const [currentUser, setCurrentUser] = useLocalStorage('current_user', null);
 
     const [blogsList, setBlogsList] = useState([]);
     const [favoritesList, setFavoritesList] = useState([]);
@@ -29,14 +30,6 @@ const ViewBlogsPage = () => {
         console.log(extractedBlogs, 'blogs');
     };
 
-    const getFavoritesList = async () => {
-        const favorites = await getDocs(favoriteBlogCollectionReference);
-        const extractedFavorites = favorites.docs
-            .filter(doc => doc.data().userId === currentUser.uid)
-            .map(doc => doc.data().blogId);
-
-        setFavoritesList(extractedFavorites);
-    };
 
     const deleteBlog = async (id) => {
         const blogDoc = doc(db, "blogs", id);
@@ -49,33 +42,43 @@ const ViewBlogsPage = () => {
         }
     };
 
-    const addFavorite = async (blogId) => {
-        const favoriteDoc = doc(favoriteBlogCollectionReference, `${currentUser.uid}_${blogId}`);
+    //Favorite Features
+    const addFavorite = async (blog) => {
+        if(currentUser.uid === blog.userId){
+            setAlertConfig({ message: 'You cannot Favorite Your own Post (━┳━｡ Д ｡━┳━)', color: 'error', isOpen: true });
+            return;
+        }
+
+        const favoriteDoc = doc(favoriteBlogCollectionReference, `${currentUser.uid}_${blog.id}`);
         try {
-            await setDoc(favoriteDoc, { userId: currentUser.uid, blogId });
-            setFavoritesList(prev => [...prev, blogId]);
-            setAlertConfig({ message: 'Added to favorites', color: 'success', isOpen: true });
+            await setDoc(favoriteDoc, { 
+                userId: currentUser.uid,//getting current user id 
+                ...blog//adding everything from the blog for later to fetch in view favorite
+            });
+            console.log(blog.id, "this is coming from add favorite ٩꒰ʘʚʘ๑꒱۶");
+
+            setFavoritesList(prev => [...prev, blog.id]);
+            setAlertConfig({ message: 'Added to favorites (o・┏ω┓・o)', color: 'success', isOpen: true });
         } catch (error) {
             setAlertConfig({ message: 'Error adding to favorites', color: 'error', isOpen: true });
         }
     };
 
-    const removeFavorite = async (blogId) => {
-        const favoriteDoc = doc(favoriteBlogCollectionReference, `${currentUser.uid}_${blogId}`);
+    const removeFavorite = async (blog) => {
+        const favoriteDoc = doc(favoriteBlogCollectionReference, `${currentUser.uid}_${blog.id}`);
         try {
             await deleteDoc(favoriteDoc);
-            setFavoritesList(prev => prev.filter(id => id !== blogId));
-            setAlertConfig({ message: 'Removed from favorites', color: 'success', isOpen: true });
+            setFavoritesList(prev => prev.filter(id => id !== blog.id));
+            setAlertConfig({ message: 'Removed from favorites (๏ᆺ๏υ)', color: 'success', isOpen: true });
         } catch (error) {
-            setAlertConfig({ message: 'Error removing from favorites', color: 'error', isOpen: true });
+            setAlertConfig({ message: 'Error removing from favorites (━┳━｡ Д ｡━┳━)', color: 'error', isOpen: true });
         }
     };
 
-    const isFavorite = (blogId) => favoritesList.includes(blogId);
+    const isFavorite = (blog) => favoritesList.includes(blog.id);
 
     useEffect(() => {
         getBlogsList();
-        getFavoritesList();
     }, [alertConfig]);
 
     return (
@@ -83,7 +86,7 @@ const ViewBlogsPage = () => {
             <Button onClick={() => navigate('/home')}>
                 <ArrowBackIcon /> BACK
             </Button>
-            <Typography variant="h3">View Blogs</Typography>
+            <Typography variant="h3">View Blogs `(,,◕　⋏　◕,,)`</Typography>
             <Divider />
             <Box display="grid" gridTemplateColumns="33% 33% 33%" gap="12px">
                 {blogsList.map((blog, index) => (
@@ -91,9 +94,9 @@ const ViewBlogsPage = () => {
                         key={index}
                         blog={blog}
                         deleteBlog={deleteBlog}
-                        isFavoriteblg={isFavorite(blog.id)}
-                        addFavoriteblg={() => addFavorite(blog.id)}
-                        removeFavoriteblg={() => removeFavorite(blog.id)}
+                        isFavoriteblg={isFavorite(blog)}
+                        addFavoriteblg={() => addFavorite(blog)}
+                        removeFavoriteblg={() => removeFavorite(blog)}
                     />
                 ))}
             </Box>
