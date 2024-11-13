@@ -44,6 +44,7 @@ const ViewBlogsPage = () => {
 
     //Favorite Features
     const addFavorite = async (blog) => {
+        //checking if current user like the post that they created
         if(currentUser.uid === blog.userId){
             setAlertConfig({ message: 'You cannot Favorite Your own Post (━┳━｡ Д ｡━┳━)', color: 'error', isOpen: true });
             return;
@@ -64,8 +65,9 @@ const ViewBlogsPage = () => {
         }
     };
 
-    const removeFavorite = async (blog) => {
-        const favoriteDoc = doc(favoriteBlogCollectionReference, `${currentUser.uid}_${blog.id}`);
+    const removeFavorite = async (blog) => {    
+        //make unique id
+        const favoriteDoc = doc(favoriteBlogCollectionReference, `${currentUser.uid}_${blog.id}` );
         try {
             await deleteDoc(favoriteDoc);
             setFavoritesList(prev => prev.filter(id => id !== blog.id));
