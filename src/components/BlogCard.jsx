@@ -15,9 +15,9 @@ const BlogCard = (props) => {
 
     const handleFavoriteClick = () => {
         if (isFavoriteblg) {
-            removeFavoriteblg(blog.id);
+            removeFavoriteblg(blog);
         } else {
-            addFavoriteblg(blog.id);
+            addFavoriteblg(blog);
         }
     };
 
