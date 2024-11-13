@@ -30,6 +30,7 @@ const CreateBlog = () => {
     //after that will add logics to now allow user to like their own post
 
     //in ViewFavoritePage, it will only fetch user favorite post by checking user.id and favorite blog id  ?
+    
 
     const blogCollectionReference = collection(db, "blogs");
     const [alertConfig, setAlertConfig] = useState({});

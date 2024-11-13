@@ -26,7 +26,6 @@ const ViewBlogsPage = () => {
         setBlogsList(extractedBlogs);
         console.log(extractedBlogs, 'blogs')
     }
-
     const deleteBlog = async (id) => {
         // First get the doc you want to delete
         const blogDoc = doc(db, "blogs", id); // We will get the  blog we are trying to delete.
